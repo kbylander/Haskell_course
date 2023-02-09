@@ -1,0 +1,64 @@
+{- Functional Programming 1
+   Assignment 4
+ -}
+-- \/\/\/ DO NOT MODIFY THE FOLLOWING LINES \/\/\/
+module Assignment4(answer11,answer12,answer13,answer14,answer15,
+                   reverseIO,
+                   connected) where
+
+import Graph
+-- /\/\/\ DO NOT MODIFY THE PRECEDING LINES /\/\/\
+import Data.List
+
+{- Exercise 3: Graphs
+   ==================
+   Read and follow the instructions in the file Graph.hs.
+ -}
+
+
+{- Exercise 4: Connected Vertices
+   ==============================
+   Define a function `connected' such that `connected g u v' returns `True' if
+   (and only if) the graph g contains a path from vertex u to vertex v.
+   A path from u to v is a sequence of vertices s_1, s_2, ..., s_n (where
+   n >= 1) such that s_1 = u, s_n = v, and for all 1 <= i < n, s_(i+1) is a
+   neighbor of s_i.
+   Note that according to this definition, each vertex is connected to itself.
+   ONLY USE THE OPERATIONS EXPORTED BY THE `Graph' MODULE TO OPERATE ON GRAPHS.
+   DO NOT USE THE CONSTRUCTOR(S) OF THE `Graph a' TYPE DIRECTLY.
+   Hint: A path from u to v, if it exists, can be found by traversing g using
+         depth-first or breadth-first search (starting at u).
+ -}
+
+{- search graph frontier discovered destination
+Attempts to find the destination node by searching through the graph, by deploying a breadth first search algorithm.
+RETURNS: True if destination vertex is in the frontier list. False if frontier is empty, i.e. no more path possible.
+EXAMPLES:
+          search (Graph [1,2,3,4,5,6,7] [(1,2),(1,3),(2,4),(3,5),(5,7)]) [2,3] 7 = True
+          search (Graph [1,2,3,4,5,6,7] [(1,2),(1,3),(2,4),(3,5),(5,7)]) [2,3] 6 = False
+ -}
+
+search :: Eq a => Graph a -> [a] -> [a] -> a -> Bool
+
+-- VARIANTS: Number of undiscovered vertices.
+search graph frontier discovered dest
+  | null frontier = False  -- indicate failure
+  | elem dest frontier = True  -- indicate success
+  | otherwise = search graph newNeighbors (newNeighbors ++ discovered) dest
+      where
+        newNeighbors = nub $ concatMap (filter (\v -> not (v `elem` discovered)) . Graph.neighbors graph) frontier
+
+
+{- connected (Graph a) initial destination
+Checks if inital is equal to destination otherwise sends it to search function.
+RETURNS: True if initial is equal to destination, or finds if there is a path via the search algorithm. If there is no path, False is returned.
+EXAMPLE:
+        connected (Graph [1,2,3,4,5,6,7] [(1,2),(1,3),(2,4),(3,5),(5,7)]) 1 1 = True
+        connected (Graph [1,2,3,4,5,6,7] [(1,2),(1,3),(2,4),(3,5),(5,7)]) 1 5 = True
+        connected (Graph [1,2,3,4,5,6,7] [(1,2),(1,3),(2,4),(3,5),(5,7)]) 1 6 = False
+ -}
+connected :: Eq a => Graph a -> a -> a -> Bool
+
+connected graph initial dest
+  | initial == dest = True
+  | otherwise = search graph (Graph.neighbors graph initial) [] dest
