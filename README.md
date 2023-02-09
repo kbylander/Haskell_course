@@ -1,4 +1,7 @@
-# ReversiAI
+# Select excercises from the functional programming course at Uppsala University
+
+Includes:
+Othello (reversi) AI
 
 Haskell code of a pseudo-smart Reversi AI. 
 
